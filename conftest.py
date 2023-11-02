@@ -5,8 +5,6 @@ from news.models import News, Comment
 
 pytestmark = pytest.mark.django_db
 
-COMMENT_TEXT = 'Текст коментария'
-
 
 @pytest.fixture
 def author(django_user_model):
@@ -55,7 +53,7 @@ def delete_url(comment):
 @pytest.fixture
 def url_to_comments(news):
     """Урл блока с комментариями."""
-    url_to_comments = reverse('news:detail', args=(news.id,)) + '#comment'
+    url_to_comments = reverse('news:detail', args=(news.id,)) + '#comments'
     return url_to_comments
 
 
