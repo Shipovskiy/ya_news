@@ -3,6 +3,8 @@ from django.urls import reverse
 
 from news.models import News, Comment
 
+pytestmark = pytest.mark.django_db
+
 COMMENT_TEXT = 'Текст коментария'
 
 
@@ -27,9 +29,11 @@ def news():
 
 
 @pytest.fixture
-def comment():
+def comment(news, author):
     comment = Comment.objects.create(
-        text='Текст коментария',
+        news=news,
+        author=author,
+        text='Текст комментария',
     )
     return comment
 
@@ -37,21 +41,21 @@ def comment():
 @pytest.fixture
 def edit_url(comment):
     """Урл редактирования комментария."""
-    edit_url = reverse('news:edit', args=(comment.pk,))
+    edit_url = reverse('news:edit', args=(comment.id,))
     return edit_url
 
 
 @pytest.fixture
 def delete_url(comment):
     """Урл удаления комментария."""
-    delete_url = reverse('news:delete', args=(comment.pk,))
+    delete_url = reverse('news:delete', args=(comment.id,))
     return delete_url
 
 
 @pytest.fixture
 def url_to_comments(news):
     """Урл блока с комментариями."""
-    url_to_comments = reverse('news:detail', args=(news.pk,)) + '#comments'
+    url_to_comments = reverse('news:detail', args=(news.id,)) + '#comment'
     return url_to_comments
 
 

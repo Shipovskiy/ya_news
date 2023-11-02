@@ -33,14 +33,29 @@ def test_detail_availability_for_anonymous_user(client, name, news):
     assert response.status_code == HTTPStatus.OK
 
 
+def test_comment_exists(comment):
+    comment_count = Comment.objects.count()
+    # Общее количество заметок в БД равно 1.
+    assert comment_count == 1
+    # Заголовок объекта, полученного при помощи фикстуры note,
+    # совпадает с тем, что указан в фикстуре.
+    assert comment.text == 'Текст комментария'
+
+
 # Редактирование и удаление комментария для автора
+@pytest.mark.parametrize(
+    'name',
+    ('news:edit',
+     'news:edit',)
+)
 def test_pages_availability_edit_comment_for_author(author_client,
                                                     comment,
-                                                    edit_url,
+                                                    name,
                                                     form_data,
                                                     url_to_comments):
     """Тест автор может редактировать свой комментарий."""
-    response = author_client.post(edit_url, data=form_data)
+    url = reverse(name, args=(comment.pk,))
+    response = author_client.post(url, data=form_data)
     assertRedirects(response, url_to_comments)
     comment.refresh_from_db()
     assert comment.text == COMMENT_TEXT
