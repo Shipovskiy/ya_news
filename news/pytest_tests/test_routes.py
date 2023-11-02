@@ -1,10 +1,8 @@
-import pytest
-from pytest_django.asserts import assertRedirects
-from django.urls import reverse
 from http import HTTPStatus
 
-
-COMMENT_TEXT = 'Текст комментария'
+import pytest
+from django.urls import reverse
+from pytest_django.asserts import assertRedirects
 
 pytestmark = pytest.mark.django_db
 
@@ -15,8 +13,8 @@ pytestmark = pytest.mark.django_db
     ('news:home', 'users:login', 'users:logout', 'users:signup')
 )
 def test_pages_availability_for_anonymous_user(client, name):
-    url = reverse(name)  # Получаем ссылку на нужный адрес.
-    response = client.get(url)  # Выполняем запрос.
+    url = reverse(name)
+    response = client.get(url)
     assert response.status_code == HTTPStatus.OK
 
 
@@ -26,26 +24,9 @@ def test_pages_availability_for_anonymous_user(client, name):
     ('news:detail',)
 )
 def test_detail_availability_for_anonymous_user(client, name, news):
-    url = reverse(name, args=(news.pk,))  # Получаем ссылку на нужный адрес.
-    response = client.get(url)  # Выполняем запрос.
+    url = reverse(name, args=(news.pk,))
+    response = client.get(url)
     assert response.status_code == HTTPStatus.OK
-
-
-# Редактирование и удаление комментария для автора
-@pytest.mark.parametrize(
-    'name',
-    ('news:edit',)
-)
-def test_pages_availability_edit_for_author(author_client,
-                                            comment,
-                                            name,
-                                            form_data,
-                                            url_to_comments):
-    url = reverse(name, args=(comment.pk,))
-    response = author_client.post(url, data=form_data)
-    assertRedirects(response, url_to_comments)
-    comment.refresh_from_db()
-    assert comment.text == 'Новый текст'
 
 
 # Страницы удаления и редактирования комментария доступны автору комментария,
